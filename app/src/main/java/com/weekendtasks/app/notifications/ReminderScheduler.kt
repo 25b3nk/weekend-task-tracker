@@ -31,21 +31,32 @@ class ReminderScheduler(private val context: Context) {
         cancelReminder(task.id)
 
         // Calculate when to show the notification (15 minutes before due time)
-        val notificationTime = calculateNotificationTime(task.dueDate, task.dueTime)
+        val dueTime = calculateDueTime(task.dueDate, task.dueTime)
+        val notificationTime = dueTime - (15 * 60 * 1000) // 15 minutes before
         val currentTime = System.currentTimeMillis()
 
         Log.d(TAG, "Task: ${task.title}")
         Log.d(TAG, "Due time: ${task.dueTime}")
-        Log.d(TAG, "Notification time: ${java.util.Date(notificationTime)}")
+        Log.d(TAG, "Actual due time: ${java.util.Date(dueTime)}")
+        Log.d(TAG, "Notification time (15 min before): ${java.util.Date(notificationTime)}")
         Log.d(TAG, "Current time: ${java.util.Date(currentTime)}")
 
-        // Only schedule if notification time is in the future
-        if (notificationTime <= currentTime) {
-            Log.d(TAG, "Notification time is in the past, skipping")
+        // If the due time has already passed, skip
+        if (dueTime <= currentTime) {
+            Log.d(TAG, "Task due time is in the past, skipping")
             return
         }
 
-        val delay = notificationTime - currentTime
+        // Calculate delay: use 15-min-before time if it's in the future,
+        // otherwise notify immediately
+        val delay = if (notificationTime > currentTime) {
+            notificationTime - currentTime
+        } else {
+            // Less than 15 minutes remain, notify immediately
+            Log.d(TAG, "Less than 15 minutes until due time, scheduling immediate notification")
+            0L
+        }
+
         Log.d(TAG, "Scheduling notification in ${delay / 1000 / 60} minutes")
 
         // Create work request
@@ -82,9 +93,9 @@ class ReminderScheduler(private val context: Context) {
     }
 
     /**
-     * Calculate when to show the notification (15 minutes before due time)
+     * Calculate the actual due time from date and time
      */
-    private fun calculateNotificationTime(dueDate: Long, dueTime: String): Long {
+    private fun calculateDueTime(dueDate: Long, dueTime: String): Long {
         // Parse time string (format: "HH:mm")
         val timeParts = dueTime.split(":")
         if (timeParts.size != 2) {
@@ -102,9 +113,6 @@ class ReminderScheduler(private val context: Context) {
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
         }
-
-        // Subtract 15 minutes for reminder
-        calendar.add(Calendar.MINUTE, -15)
 
         return calendar.timeInMillis
     }

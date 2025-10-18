@@ -24,8 +24,20 @@ fun DateTimePicker(
     onTimeSelected: (String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val datePickerState = rememberDatePickerState()
-    val timePickerState = rememberTimePickerState()
+    // Initialize date picker with existing date
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = dueDate
+    )
+
+    // Initialize time picker with existing time
+    val (initialHour, initialMinute) = remember(dueTime) {
+        dueTime?.let { parseTime(it) } ?: (0 to 0)
+    }
+    val timePickerState = rememberTimePickerState(
+        initialHour = initialHour,
+        initialMinute = initialMinute
+    )
+
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
 
@@ -140,4 +152,15 @@ fun DateTimePicker(
 private fun formatDate(timestamp: Long): String {
     val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
     return sdf.format(Date(timestamp))
+}
+
+private fun parseTime(time: String): Pair<Int, Int> {
+    return try {
+        val parts = time.split(":")
+        val hour = parts[0].toIntOrNull() ?: 0
+        val minute = parts[1].toIntOrNull() ?: 0
+        hour to minute
+    } catch (e: Exception) {
+        0 to 0
+    }
 }
