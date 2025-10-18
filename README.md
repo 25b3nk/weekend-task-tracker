@@ -5,7 +5,9 @@ A native Android app for managing weekend tasks using Google ML Kit for natural 
 ## Features
 
 - **Natural Language Task Input**: Create tasks using everyday language like "Clean garage next Saturday at 2pm"
+- **Voice Input**: Speak your tasks using Android's built-in speech recognition
 - **ML Kit Integration**: Automatic extraction of dates, times, and task descriptions using Google ML Kit
+- **Smart Reminders**: Get notified 15 minutes before task due time
 - **Three Task Lists**:
   - **Weekend Tasks**: Active tasks for the current/upcoming weekend
   - **Master List**: Backlog of tasks for future weekends
@@ -17,7 +19,35 @@ A native Android app for managing weekend tasks using Google ML Kit for natural 
 
 ## Screenshots
 
-(Add screenshots here once the app is built)
+### Main Interface
+<table>
+  <tr>
+    <td><img src="screenshots/main-screen.png" alt="Main Screen" width="250"/></td>
+    <td><img src="screenshots/add-task.png" alt="Add Task" width="250"/></td>
+    <td><img src="screenshots/task-list.png" alt="Task List" width="250"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Main Screen</b><br/>Three tabs for organizing tasks</td>
+    <td align="center"><b>Add Task with NLP</b><br/>Natural language input</td>
+    <td align="center"><b>Task List</b><br/>Priority and due dates</td>
+  </tr>
+</table>
+
+### Features
+<table>
+  <tr>
+    <td><img src="screenshots/voice-input.png" alt="Voice Input" width="250"/></td>
+    <td><img src="screenshots/edit-task.png" alt="Edit Task" width="250"/></td>
+    <td><img src="screenshots/notification.png" alt="Notification" width="250"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Voice Input</b><br/>Speak your tasks</td>
+    <td align="center"><b>Edit Task</b><br/>Modify task details</td>
+    <td align="center"><b>Reminders</b><br/>15-min advance notice</td>
+  </tr>
+</table>
+
+> **Note**: Place your screenshots in the `/screenshots` directory. See [screenshots/README.md](screenshots/README.md) for guidelines.
 
 ## Tech Stack
 
@@ -259,12 +289,12 @@ Return ParsedTask
 Planned features for future releases:
 
 1. **Recurring Tasks**: "every Saturday", "weekly"
-2. **Voice Input**: Speech-to-text for task creation
-3. **Notifications**: Reminders for upcoming tasks
-4. **Statistics**: Completion rate, productivity trends
-5. **Monday Reminder**: Auto-suggest moving uncompleted weekend tasks
-6. **Smart Suggestions**: ML Kit Smart Reply for common tasks
-7. **Multi-language**: Support for additional languages
+2. **Statistics**: Completion rate, productivity trends
+3. **Monday Reminder**: Auto-suggest moving uncompleted weekend tasks
+4. **Smart Suggestions**: ML Kit Smart Reply for common tasks
+5. **Multi-language**: Support for additional languages
+6. **Widget Support**: Home screen widget for quick task access
+7. **Task Categories**: Organize tasks by category (home, errands, projects, etc.)
 
 ## Troubleshooting
 
