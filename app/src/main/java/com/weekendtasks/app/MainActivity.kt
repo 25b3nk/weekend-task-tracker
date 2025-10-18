@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.weekendtasks.app.di.ViewModelFactory
+import com.weekendtasks.app.ui.components.NotificationPermissionDialog
 import com.weekendtasks.app.ui.navigation.NavGraph
 import com.weekendtasks.app.ui.screens.addtask.AddTaskViewModel
 import com.weekendtasks.app.ui.screens.main.MainViewModel
@@ -44,6 +45,9 @@ class MainActivity : ComponentActivity() {
                         mainViewModel = mainViewModel,
                         addTaskViewModel = addTaskViewModel
                     )
+
+                    // Request notification permission on app start (Android 13+)
+                    NotificationPermissionDialog()
                 }
             }
         }
