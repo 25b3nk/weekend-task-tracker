@@ -6,6 +6,7 @@ import com.weekendtasks.app.WeekendTaskApp
 import com.weekendtasks.app.data.repository.TaskRepository
 import com.weekendtasks.app.domain.nlp.NaturalLanguageProcessor
 import com.weekendtasks.app.domain.usecase.*
+import com.weekendtasks.app.notifications.ReminderScheduler
 import com.weekendtasks.app.ui.screens.addtask.AddTaskViewModel
 import com.weekendtasks.app.ui.screens.main.MainViewModel
 
@@ -21,16 +22,20 @@ class ViewModelFactory(
         TaskRepository(app.database.taskDao())
     }
 
+    private val reminderScheduler: ReminderScheduler by lazy {
+        ReminderScheduler(app)
+    }
+
     private val getTasksUseCase: GetTasksUseCase by lazy {
         GetTasksUseCase(repository)
     }
 
     private val addTaskUseCase: AddTaskUseCase by lazy {
-        AddTaskUseCase(repository)
+        AddTaskUseCase(repository, reminderScheduler)
     }
 
     private val completeTaskUseCase: CompleteTaskUseCase by lazy {
-        CompleteTaskUseCase(repository)
+        CompleteTaskUseCase(repository, reminderScheduler)
     }
 
     private val moveTaskUseCase: MoveTaskUseCase by lazy {
@@ -38,11 +43,11 @@ class ViewModelFactory(
     }
 
     private val deleteTaskUseCase: DeleteTaskUseCase by lazy {
-        DeleteTaskUseCase(repository)
+        DeleteTaskUseCase(repository, reminderScheduler)
     }
 
     private val updateTaskUseCase: UpdateTaskUseCase by lazy {
-        UpdateTaskUseCase(repository)
+        UpdateTaskUseCase(repository, reminderScheduler)
     }
 
     private val nlpProcessor: NaturalLanguageProcessor by lazy {

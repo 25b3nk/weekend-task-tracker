@@ -2,6 +2,7 @@ package com.weekendtasks.app
 
 import android.app.Application
 import com.weekendtasks.app.data.local.TaskDatabase
+import com.weekendtasks.app.notifications.NotificationHelper
 
 /**
  * Application class for Weekend Task Tracker.
@@ -17,6 +18,9 @@ class WeekendTaskApp : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+
+        // Initialize notification channel
+        NotificationHelper.createNotificationChannel(this)
     }
 
     companion object {

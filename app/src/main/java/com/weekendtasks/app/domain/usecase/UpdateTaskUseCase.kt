@@ -3,11 +3,15 @@ package com.weekendtasks.app.domain.usecase
 import com.weekendtasks.app.data.model.Task
 import com.weekendtasks.app.data.model.TaskPriority
 import com.weekendtasks.app.data.repository.TaskRepository
+import com.weekendtasks.app.notifications.ReminderScheduler
 
 /**
  * Use case for updating an existing task.
  */
-class UpdateTaskUseCase(private val repository: TaskRepository) {
+class UpdateTaskUseCase(
+    private val repository: TaskRepository,
+    private val reminderScheduler: ReminderScheduler
+) {
 
     suspend operator fun invoke(
         taskId: String,
@@ -38,6 +42,15 @@ class UpdateTaskUseCase(private val repository: TaskRepository) {
 
             // Update in repository
             repository.updateTask(updatedTask)
+
+            // Reschedule reminder if task has due date and time
+            if (updatedTask.dueDate != null && updatedTask.dueTime != null) {
+                reminderScheduler.scheduleReminder(updatedTask)
+            } else {
+                // Cancel reminder if due date/time was removed
+                reminderScheduler.cancelReminder(updatedTask.id)
+            }
+
             Result.success(updatedTask)
         } catch (e: Exception) {
             Result.failure(e)
