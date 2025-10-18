@@ -12,6 +12,7 @@ import com.weekendtasks.app.data.model.TaskPriority
 import com.weekendtasks.app.data.model.TaskStatus
 import com.weekendtasks.app.ui.components.NLPParsePreview
 import com.weekendtasks.app.ui.components.TaskInputField
+import com.weekendtasks.app.ui.components.VoiceInputButton
 
 /**
  * Screen for adding a new task with NLP support.
@@ -60,15 +61,30 @@ fun AddTaskScreen(
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            // Task input field
-            TaskInputField(
-                value = inputText,
-                onValueChange = { viewModel.updateInputText(it) },
-                label = "Task",
-                placeholder = "e.g., Clean garage Saturday afternoon",
-                minLines = 2,
-                maxLines = 4
-            )
+            // Task input field with voice input
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.Top
+            ) {
+                TaskInputField(
+                    value = inputText,
+                    onValueChange = { viewModel.updateInputText(it) },
+                    label = "Task",
+                    placeholder = "e.g., Clean garage Saturday afternoon or tap mic",
+                    minLines = 2,
+                    maxLines = 4,
+                    modifier = Modifier.weight(1f)
+                )
+
+                // Voice input button
+                VoiceInputButton(
+                    onTextRecognized = { recognizedText ->
+                        viewModel.updateInputText(recognizedText)
+                    },
+                    enabled = uiState !is AddTaskUiState.Loading
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
