@@ -84,6 +84,7 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
     // Google ML Kit - Entity Extraction (for dates, times, addresses)
     implementation("com.google.mlkit:entity-extraction:16.0.0-beta5")

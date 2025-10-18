@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Weekend
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -122,5 +123,3 @@ fun MainScreen(
     }
 }
 
-// Import for Column
-import androidx.compose.foundation.layout.Column
