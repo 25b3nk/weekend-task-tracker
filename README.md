@@ -8,6 +8,7 @@ A native Android app for managing weekend tasks using Google ML Kit for natural 
 - **Voice Input**: Speak your tasks using Android's built-in speech recognition
 - **ML Kit Integration**: Automatic extraction of dates, times, and task descriptions using Google ML Kit
 - **Smart Reminders**: Get notified 15 minutes before task due time
+- **Monday Auto-Move**: Uncompleted weekend tasks automatically move to master list every Monday
 - **Three Task Lists**:
   - **Weekend Tasks**: Active tasks for the current/upcoming weekend
   - **Master List**: Backlog of tasks for future weekends
@@ -63,6 +64,7 @@ A native Android app for managing weekend tasks using Google ML Kit for natural 
 - **Google ML Kit**: Entity Extraction for NLP (v16.0.0-beta5)
 - **Room Database**: Local data persistence (v2.6.1)
 - **Jetpack Compose**: Modern declarative UI (BOM 2024.02.00)
+- **WorkManager**: Background task scheduling (v2.9.0)
 - **Natty Date Parser**: Enhanced date/time parsing (v0.13)
 - **Kotlin Coroutines**: Asynchronous programming (v1.7.3)
 - **Navigation Compose**: Screen navigation (v2.7.7)
@@ -111,13 +113,22 @@ com.weekendtasks.app/
 │   ├── components/
 │   │   ├── TaskCard.kt              # Reusable task card
 │   │   ├── TaskInputField.kt        # Input component
-│   │   └── NLPParsePreview.kt       # Parsing preview
+│   │   ├── NLPParsePreview.kt       # Parsing preview
+│   │   ├── VoiceInputButton.kt      # Voice input
+│   │   ├── DateTimePicker.kt        # Date/time picker
+│   │   └── NotificationPermissionDialog.kt  # Permission dialog
 │   ├── theme/
 │   │   ├── Color.kt                 # Color definitions
 │   │   ├── Theme.kt                 # App theme
 │   │   └── Type.kt                  # Typography
 │   └── navigation/
 │       └── NavGraph.kt              # Navigation setup
+├── notifications/
+│   ├── NotificationHelper.kt        # Notification creation
+│   ├── ReminderScheduler.kt         # Schedule task reminders
+│   ├── TaskReminderWorker.kt        # Background worker
+│   ├── MondayReminderWorker.kt      # Monday auto-move worker
+│   └── MondayReminderScheduler.kt   # Monday scheduler
 ├── di/
 │   └── ViewModelFactory.kt          # Dependency injection
 ├── MainActivity.kt                   # Main activity
@@ -290,11 +301,10 @@ Planned features for future releases:
 
 1. **Recurring Tasks**: "every Saturday", "weekly"
 2. **Statistics**: Completion rate, productivity trends
-3. **Monday Reminder**: Auto-suggest moving uncompleted weekend tasks
-4. **Smart Suggestions**: ML Kit Smart Reply for common tasks
-5. **Multi-language**: Support for additional languages
-6. **Widget Support**: Home screen widget for quick task access
-7. **Task Categories**: Organize tasks by category (home, errands, projects, etc.)
+3. **Smart Suggestions**: ML Kit Smart Reply for common tasks
+4. **Multi-language**: Support for additional languages
+5. **Widget Support**: Home screen widget for quick task access
+6. **Task Categories**: Organize tasks by category (home, errands, projects, etc.)
 
 ## Troubleshooting
 

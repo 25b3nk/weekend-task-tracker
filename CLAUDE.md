@@ -20,11 +20,12 @@ A native Android task management app specifically designed for weekend planning.
 1. Natural language task creation (e.g., "Clean garage Saturday at 2pm")
 2. Voice input for hands-free task creation
 3. Smart notifications (15-min advance reminders)
-4. Three task lists: Weekend, Master List, Completed
-5. Offline-first with Room database
-6. Material Design 3 UI with dynamic colors
-7. Priority management (Low, Medium, High)
-8. Task operations: Create, Complete, Move, Edit, Delete
+4. Monday auto-move (uncompleted weekend tasks → master list)
+5. Three task lists: Weekend, Master List, Completed
+6. Offline-first with Room database
+7. Material Design 3 UI with dynamic colors
+8. Priority management (Low, Medium, High)
+9. Task operations: Create, Complete, Move, Edit, Delete
 
 ## Technology Stack
 
@@ -114,7 +115,9 @@ app/src/main/java/com/weekendtasks/app/
 ├── notifications/                  # Notification system
 │   ├── NotificationHelper.kt       # Notification creation & display
 │   ├── ReminderScheduler.kt        # WorkManager scheduling
-│   └── TaskReminderWorker.kt       # Background worker
+│   ├── TaskReminderWorker.kt       # Background worker
+│   ├── MondayReminderWorker.kt     # Monday auto-move worker
+│   └── MondayReminderScheduler.kt  # Monday scheduling logic
 │
 ├── MainActivity.kt                 # Entry point
 └── WeekendTaskApp.kt              # Application class
@@ -227,7 +230,65 @@ User sees notification
 - Offers "Enable" or "Not Now" options
 - Links to settings if user denies permanently
 
-### 3. Natural Language Processing
+### 3. Monday Auto-Move Feature
+
+**Location**: `notifications/MondayReminderWorker.kt`, `notifications/MondayReminderScheduler.kt`
+
+**Purpose**: Automatically moves uncompleted weekend tasks to master list every Monday morning.
+
+**Architecture**:
+```
+App Startup
+    ↓
+MondayReminderScheduler.scheduleWeeklyCheck() (schedules for 9 AM every Monday)
+    ↓
+MondayReminderScheduler.checkAndScheduleIfNeeded() (runs if Monday)
+    ↓
+MondayReminderWorker.doWork() (checks day, finds tasks, moves them)
+    ↓
+NotificationHelper.showMondayReminder() (lists moved tasks)
+```
+
+**Key Components**:
+
+1. **MondayReminderScheduler**: Schedules and manages Monday checks
+   - `scheduleWeeklyCheck()`: Sets up recurring check every Monday at 9 AM
+   - `checkAndScheduleIfNeeded()`: Runs on app startup to check if today is Monday
+   - Uses SharedPreferences to prevent duplicate runs on same day
+   - Calculates delay until next Monday using Calendar API
+
+2. **MondayReminderWorker**: Performs the actual move operation
+   - Verifies it's Monday before executing
+   - Queries for uncompleted weekend tasks via `repository.getUncompletedWeekendTasks()`
+   - Moves each task to MASTER status
+   - Cancels any scheduled reminders for moved tasks
+   - Shows notification with list of moved tasks
+
+3. **NotificationHelper.showMondayReminder()**: Creates notification
+   - Shows count of moved tasks in title
+   - Lists all moved task titles in expanded view
+   - Non-intrusive (PRIORITY_DEFAULT, not HIGH)
+   - Opens app when tapped
+
+**Scheduling Strategy**:
+```kotlin
+// Weekly recurring check
+PeriodicWorkRequest (7 days interval)
+  + Initial delay (calculated to next Monday 9 AM)
+  + ExistingPeriodicWorkPolicy.KEEP
+
+// Daily prevention of duplicates
+SharedPreferences stores "last_check_date"
+  → Only runs once per day
+```
+
+**Integration Points**:
+- Initialized in `WeekendTaskApp.onCreate()` on every app launch
+- Uses existing `TaskRepository` for database operations
+- Reuses `ReminderScheduler` to cancel notifications
+- Shares `NotificationHelper` for consistent UI
+
+### 4. Natural Language Processing
 
 **Location**: `domain/nlp/`
 
@@ -637,19 +698,20 @@ navController.navigate("new_route")
 ✅ **Notifications**: 15-minute advance reminders
 ✅ **Edit Tasks**: Full edit functionality with proper state management
 ✅ **Permission Handling**: User-friendly notification permission request
+✅ **Date/Time Pickers**: Manual date and time selection for tasks
+✅ **Monday Auto-Move**: Automatic transfer of uncompleted weekend tasks to master list every Monday
 
 ## Future Enhancements
 
 Planned features (not yet implemented):
 
 1. **Recurring Tasks**: Support "every Saturday", "weekly", etc.
-2. **Monday Auto-move**: Prompt to move uncompleted weekend tasks
-3. **Statistics Screen**: Completion rate, trends, charts
-4. **Multi-language**: ML Kit supports 15+ languages
-5. **Backup/Restore**: Cloud backup via Google Drive
-6. **Widgets**: Home screen widget for quick task view
-7. **Task Categories**: Organize by category (home, errands, etc.)
-8. **Themes**: Multiple Material 3 color schemes
+2. **Statistics Screen**: Completion rate, trends, charts
+3. **Multi-language**: ML Kit supports 15+ languages
+4. **Backup/Restore**: Cloud backup via Google Drive
+5. **Widgets**: Home screen widget for quick task view
+6. **Task Categories**: Organize by category (home, errands, etc.)
+7. **Themes**: Multiple Material 3 color schemes
 
 ## Resources
 
