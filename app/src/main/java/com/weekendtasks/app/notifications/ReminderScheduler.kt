@@ -1,6 +1,7 @@
 package com.weekendtasks.app.notifications
 
 import android.content.Context
+import android.util.Log
 import androidx.work.*
 import com.weekendtasks.app.data.model.Task
 import java.util.Calendar
@@ -18,8 +19,11 @@ class ReminderScheduler(private val context: Context) {
      * Notification will appear 15 minutes before the due time
      */
     fun scheduleReminder(task: Task) {
+        Log.d(TAG, "scheduleReminder called for task: ${task.title}")
+
         // Only schedule if task has both date and time
         if (task.dueDate == null || task.dueTime == null) {
+            Log.d(TAG, "Task ${task.id} has no date or time, skipping notification")
             return
         }
 
@@ -30,12 +34,19 @@ class ReminderScheduler(private val context: Context) {
         val notificationTime = calculateNotificationTime(task.dueDate, task.dueTime)
         val currentTime = System.currentTimeMillis()
 
+        Log.d(TAG, "Task: ${task.title}")
+        Log.d(TAG, "Due time: ${task.dueTime}")
+        Log.d(TAG, "Notification time: ${java.util.Date(notificationTime)}")
+        Log.d(TAG, "Current time: ${java.util.Date(currentTime)}")
+
         // Only schedule if notification time is in the future
         if (notificationTime <= currentTime) {
+            Log.d(TAG, "Notification time is in the past, skipping")
             return
         }
 
         val delay = notificationTime - currentTime
+        Log.d(TAG, "Scheduling notification in ${delay / 1000 / 60} minutes")
 
         // Create work request
         val inputData = workDataOf(
@@ -54,6 +65,12 @@ class ReminderScheduler(private val context: Context) {
             ExistingWorkPolicy.REPLACE,
             workRequest
         )
+
+        Log.d(TAG, "Reminder scheduled successfully for task: ${task.title}")
+    }
+
+    companion object {
+        private const val TAG = "ReminderScheduler"
     }
 
     /**
