@@ -169,9 +169,21 @@ class AddTaskViewModel(
 
             _uiState.value = AddTaskUiState.Loading
 
-            // Use manual overrides if set, otherwise use parsed values
-            val dueDate = _manualDate.value ?: _parsedTask.value.dueDate
-            val dueTime = _manualTime.value ?: _parsedTask.value.dueTime
+            // Determine which date/time to use:
+            // - If NLP found new date/time, prefer that
+            // - Otherwise use manual overrides (for edit mode)
+            // - Otherwise use nothing (for new tasks without date/time)
+            val dueDate = if (_parsedTask.value.dueDate != null) {
+                _parsedTask.value.dueDate
+            } else {
+                _manualDate.value
+            }
+
+            val dueTime = if (_parsedTask.value.dueTime != null) {
+                _parsedTask.value.dueTime
+            } else {
+                _manualTime.value
+            }
 
             val result = if (_editingTaskId.value != null) {
                 // Update existing task
