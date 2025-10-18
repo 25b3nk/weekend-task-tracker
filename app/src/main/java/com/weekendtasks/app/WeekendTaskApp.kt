@@ -1,0 +1,26 @@
+package com.weekendtasks.app
+
+import android.app.Application
+import com.weekendtasks.app.data.local.TaskDatabase
+
+/**
+ * Application class for Weekend Task Tracker.
+ * Initializes the database and provides application-wide dependencies.
+ */
+class WeekendTaskApp : Application() {
+
+    // Lazy initialization of database
+    val database: TaskDatabase by lazy {
+        TaskDatabase.getDatabase(this)
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        instance = this
+    }
+
+    companion object {
+        lateinit var instance: WeekendTaskApp
+            private set
+    }
+}

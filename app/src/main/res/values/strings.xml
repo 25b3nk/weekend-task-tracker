@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Weekend Task Tracker</string>
+    <string name="weekend_tab">Weekend</string>
+    <string name="master_tab">Master List</string>
+    <string name="completed_tab">Completed</string>
+    <string name="add_task">Add Task</string>
+    <string name="edit_task">Edit Task</string>
+    <string name="task_title">Task Title</string>
+    <string name="task_description">Description (optional)</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="complete">Complete</string>
+    <string name="move_to_weekend">Move to Weekend</string>
+    <string name="move_to_master">Move to Master List</string>
+    <string name="priority">Priority</string>
+    <string name="high_priority">High</string>
+    <string name="medium_priority">Medium</string>
+    <string name="low_priority">Low</string>
+    <string name="nlp_hint">e.g., Clean garage Saturday afternoon</string>
+</resources>
