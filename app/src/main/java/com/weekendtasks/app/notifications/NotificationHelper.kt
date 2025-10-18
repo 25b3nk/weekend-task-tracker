@@ -19,6 +19,7 @@ object NotificationHelper {
     private const val CHANNEL_ID = "task_reminders"
     private const val CHANNEL_NAME = "Task Reminders"
     private const val CHANNEL_DESCRIPTION = "Notifications for upcoming tasks"
+    private const val MONDAY_NOTIFICATION_ID = 999
 
     /**
      * Create notification channel (required for Android 8.0+)
@@ -85,6 +86,57 @@ object NotificationHelper {
      */
     fun cancelTaskReminder(context: Context, taskId: String) {
         NotificationManagerCompat.from(context).cancel(taskId.hashCode())
+    }
+
+    /**
+     * Show Monday reminder notification listing moved tasks
+     */
+    fun showMondayReminder(
+        context: Context,
+        movedTasks: List<String>
+    ) {
+        if (movedTasks.isEmpty()) return
+
+        // Create intent to open app when notification is tapped
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            MONDAY_NOTIFICATION_ID,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        // Build task list for notification
+        val taskList = movedTasks.joinToString("\n") { "• $it" }
+        val title = if (movedTasks.size == 1) {
+            "1 Weekend Task Moved"
+        } else {
+            "${movedTasks.size} Weekend Tasks Moved"
+        }
+
+        // Build notification
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_menu_agenda)
+            .setContentTitle(title)
+            .setContentText("Moved to Master List for future weekends")
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText("The following uncompleted tasks were moved to Master List:\n\n$taskList")
+            )
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        // Show notification
+        try {
+            NotificationManagerCompat.from(context).notify(MONDAY_NOTIFICATION_ID, notification)
+        } catch (e: SecurityException) {
+            // Permission not granted - silently fail
+        }
     }
 
     /**

@@ -2,6 +2,7 @@ package com.weekendtasks.app
 
 import android.app.Application
 import com.weekendtasks.app.data.local.TaskDatabase
+import com.weekendtasks.app.notifications.MondayReminderScheduler
 import com.weekendtasks.app.notifications.NotificationHelper
 
 /**
@@ -21,6 +22,12 @@ class WeekendTaskApp : Application() {
 
         // Initialize notification channel
         NotificationHelper.createNotificationChannel(this)
+
+        // Schedule weekly Monday reminder check
+        MondayReminderScheduler.scheduleWeeklyCheck(this)
+
+        // Check if we should run Monday reminder today
+        MondayReminderScheduler.checkAndScheduleIfNeeded(this)
     }
 
     companion object {
