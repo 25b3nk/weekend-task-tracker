@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.weekendtasks.app.data.model.TaskPriority
 import com.weekendtasks.app.data.model.TaskStatus
+import com.weekendtasks.app.data.repository.TaskRepository
 import com.weekendtasks.app.domain.nlp.NaturalLanguageProcessor
 import com.weekendtasks.app.domain.nlp.ParsedTask
 import com.weekendtasks.app.domain.usecase.AddTaskUseCase
@@ -20,8 +21,16 @@ import kotlinx.coroutines.launch
 class AddTaskViewModel(
     private val addTaskUseCase: AddTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
-    private val nlpProcessor: NaturalLanguageProcessor
+    private val nlpProcessor: NaturalLanguageProcessor,
+    private val repository: TaskRepository
 ) : ViewModel() {
+
+    // Edit mode state
+    private val _editingTaskId = MutableStateFlow<String?>(null)
+    val editingTaskId: StateFlow<String?> = _editingTaskId.asStateFlow()
+
+    val isEditMode: StateFlow<Boolean> = _editingTaskId.map { it != null }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     // Input text state
     private val _inputText = MutableStateFlow("")
@@ -119,7 +128,35 @@ class AddTaskViewModel(
     }
 
     /**
-     * Save the task
+     * Load task for editing
+     */
+    fun loadTaskForEdit(taskId: String) {
+        viewModelScope.launch {
+            _editingTaskId.value = taskId
+            val task = repository.getTaskById(taskId)
+
+            if (task != null) {
+                // Populate form with existing task data
+                _inputText.value = task.title
+                _selectedPriority.value = task.priority
+                _selectedStatus.value = task.status
+                _manualDate.value = task.dueDate
+                _manualTime.value = task.dueTime
+
+                // Set parsed task to match current values
+                _parsedTask.value = ParsedTask(
+                    title = task.title,
+                    dueDate = task.dueDate,
+                    dueTime = task.dueTime,
+                    rawInput = task.title,
+                    confidence = 1.0f
+                )
+            }
+        }
+    }
+
+    /**
+     * Save the task (create or update)
      */
     fun saveTask() {
         viewModelScope.launch {
@@ -136,14 +173,29 @@ class AddTaskViewModel(
             val dueDate = _manualDate.value ?: _parsedTask.value.dueDate
             val dueTime = _manualTime.value ?: _parsedTask.value.dueTime
 
-            addTaskUseCase(
-                title = title,
-                description = null,
-                status = _selectedStatus.value,
-                dueDate = dueDate,
-                dueTime = dueTime,
-                priority = _selectedPriority.value
-            ).onSuccess {
+            val result = if (_editingTaskId.value != null) {
+                // Update existing task
+                updateTaskUseCase(
+                    taskId = _editingTaskId.value!!,
+                    title = title,
+                    description = null,
+                    dueDate = dueDate,
+                    dueTime = dueTime,
+                    priority = _selectedPriority.value
+                )
+            } else {
+                // Create new task
+                addTaskUseCase(
+                    title = title,
+                    description = null,
+                    status = _selectedStatus.value,
+                    dueDate = dueDate,
+                    dueTime = dueTime,
+                    priority = _selectedPriority.value
+                )
+            }
+
+            result.onSuccess {
                 _uiState.value = AddTaskUiState.Success
             }.onFailure { error ->
                 _uiState.value = AddTaskUiState.Error(error.message ?: "Failed to save task")
@@ -169,6 +221,7 @@ class AddTaskViewModel(
         _selectedPriority.value = TaskPriority.MEDIUM
         _selectedStatus.value = TaskStatus.WEEKEND
         _uiState.value = AddTaskUiState.Idle
+        _editingTaskId.value = null
     }
 
     override fun onCleared() {

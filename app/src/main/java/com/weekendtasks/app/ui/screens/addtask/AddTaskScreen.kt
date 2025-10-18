@@ -31,6 +31,7 @@ fun AddTaskScreen(
     val selectedStatus by viewModel.selectedStatus.collectAsState()
     val isProcessing by viewModel.isProcessing.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
+    val isEditMode by viewModel.isEditMode.collectAsState()
 
     // Handle UI state
     LaunchedEffect(uiState) {
@@ -46,7 +47,7 @@ fun AddTaskScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add Task") },
+                title = { Text(if (isEditMode) "Edit Task" else "Add Task") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -123,23 +124,25 @@ fun AddTaskScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Status selector (which list to add to)
-            Text(
-                text = "Add to",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                listOf(TaskStatus.WEEKEND, TaskStatus.MASTER).forEach { status ->
-                    FilterChip(
-                        selected = selectedStatus == status,
-                        onClick = { viewModel.setStatus(status) },
-                        label = { Text(if (status == TaskStatus.WEEKEND) "Weekend" else "Master List") },
-                        modifier = Modifier.weight(1f)
-                    )
+            // Status selector (which list to add to) - only show in add mode
+            if (!isEditMode) {
+                Text(
+                    text = "Add to",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf(TaskStatus.WEEKEND, TaskStatus.MASTER).forEach { status ->
+                        FilterChip(
+                            selected = selectedStatus == status,
+                            onClick = { viewModel.setStatus(status) },
+                            label = { Text(if (status == TaskStatus.WEEKEND) "Weekend" else "Master List") },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
             }
 
@@ -167,7 +170,7 @@ fun AddTaskScreen(
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                 } else {
-                    Text("Save Task")
+                    Text(if (isEditMode) "Update Task" else "Save Task")
                 }
             }
         }

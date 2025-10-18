@@ -1,6 +1,7 @@
 package com.weekendtasks.app.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -51,6 +52,11 @@ fun NavGraph(
 
         // Add task screen
         composable(Screen.AddTask.route) {
+            // Reset form when entering add mode
+            LaunchedEffect(Unit) {
+                addTaskViewModel.reset()
+            }
+
             AddTaskScreen(
                 viewModel = addTaskViewModel,
                 onNavigateBack = {
@@ -59,10 +65,17 @@ fun NavGraph(
             )
         }
 
-        // Edit task screen (uses same screen as add task for now)
+        // Edit task screen (uses same screen as add task)
         composable(Screen.EditTask.route) { backStackEntry ->
             val taskId = backStackEntry.arguments?.getString("taskId")
-            // For now, navigate back. Full edit implementation would load the task here.
+
+            // Load task data when entering edit mode
+            LaunchedEffect(taskId) {
+                taskId?.let {
+                    addTaskViewModel.loadTaskForEdit(it)
+                }
+            }
+
             AddTaskScreen(
                 viewModel = addTaskViewModel,
                 onNavigateBack = {

@@ -64,7 +64,8 @@ class ViewModelFactory(
                 AddTaskViewModel(
                     addTaskUseCase,
                     updateTaskUseCase,
-                    nlpProcessor
+                    nlpProcessor,
+                    repository
                 ) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
