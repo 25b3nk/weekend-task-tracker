@@ -18,11 +18,13 @@ A native Android task management app specifically designed for weekend planning.
 
 ### Key Features
 1. Natural language task creation (e.g., "Clean garage Saturday at 2pm")
-2. Three task lists: Weekend, Master List, Completed
-3. Offline-first with Room database
-4. Material Design 3 UI with dynamic colors
-5. Priority management (Low, Medium, High)
-6. Task operations: Create, Complete, Move, Edit, Delete
+2. Voice input for hands-free task creation
+3. Smart notifications (15-min advance reminders)
+4. Three task lists: Weekend, Master List, Completed
+5. Offline-first with Room database
+6. Material Design 3 UI with dynamic colors
+7. Priority management (Low, Medium, High)
+8. Task operations: Create, Complete, Move, Edit, Delete
 
 ## Technology Stack
 
@@ -45,6 +47,9 @@ implementation("com.joestelmach:natty:0.13")
 
 // Coroutines
 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+// WorkManager (for notifications)
+implementation("androidx.work:work-runtime-ktx:2.9.0")
 ```
 
 ## Project Structure
@@ -93,7 +98,9 @@ app/src/main/java/com/weekendtasks/app/
 │   ├── components/                 # Reusable UI components
 │   │   ├── TaskCard.kt             # Task display card
 │   │   ├── TaskInputField.kt       # Text input field
-│   │   └── NLPParsePreview.kt      # Parsing preview card
+│   │   ├── NLPParsePreview.kt      # Parsing preview card
+│   │   ├── VoiceInputButton.kt     # Voice recognition button
+│   │   └── NotificationPermissionDialog.kt  # Permission request
 │   ├── theme/                      # Material Design 3 theme
 │   │   ├── Color.kt                # Color palette
 │   │   ├── Type.kt                 # Typography
@@ -103,6 +110,11 @@ app/src/main/java/com/weekendtasks/app/
 │
 ├── di/                             # Dependency injection
 │   └── ViewModelFactory.kt         # Manual DI factory
+│
+├── notifications/                  # Notification system
+│   ├── NotificationHelper.kt       # Notification creation & display
+│   ├── ReminderScheduler.kt        # WorkManager scheduling
+│   └── TaskReminderWorker.kt       # Background worker
 │
 ├── MainActivity.kt                 # Entry point
 └── WeekendTaskApp.kt              # Application class
@@ -135,7 +147,87 @@ View (Composable) ↔ ViewModel ↔ Use Case ↔ Repository ↔ Room Database
 
 ## Key Implementation Details
 
-### 1. Natural Language Processing
+### 1. Voice Input
+
+**Location**: `ui/components/VoiceInputButton.kt`
+
+**Features**:
+- Uses Android's built-in Speech Recognition (RecognizerIntent)
+- Automatically requests RECORD_AUDIO permission
+- Returns recognized text to task input field
+- Integrates with existing NLP pipeline
+
+**Implementation**:
+```kotlin
+val speechRecognizerLauncher = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.StartActivityForResult()
+) { result ->
+    val spokenText = result.data?.getStringArrayListExtra(
+        RecognizerIntent.EXTRA_RESULTS
+    )?.firstOrNull()
+    if (!spokenText.isNullOrBlank()) {
+        onTextRecognized(spokenText)
+    }
+}
+```
+
+**Usage**:
+- User taps microphone icon on AddTaskScreen
+- System speech recognition dialog appears
+- Recognized text populates input field
+- NLP automatically extracts date/time
+
+### 2. Notification System
+
+**Location**: `notifications/`
+
+**Architecture**:
+```
+Task Created/Updated
+    ↓
+ReminderScheduler.scheduleReminder()
+    ↓
+WorkManager (schedules for 15 min before due time)
+    ↓
+TaskReminderWorker.doWork() (at scheduled time)
+    ↓
+NotificationHelper.showTaskReminder()
+    ↓
+User sees notification
+```
+
+**Key Components**:
+
+1. **NotificationHelper**: Creates and manages notifications
+   - Creates notification channel on app init
+   - Shows reminder with task title and due time
+   - Handles Android 13+ permission checks
+   - Opens app when tapped
+
+2. **ReminderScheduler**: Manages WorkManager scheduling
+   - Schedules notifications 15 minutes before due time
+   - Cancels reminders when task completed/deleted
+   - Uses exact timing with AlarmManager
+
+3. **TaskReminderWorker**: Background worker
+   - Executes at scheduled time
+   - Checks if task still pending
+   - Shows notification if not completed
+
+**Permissions Required**:
+```xml
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+<uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+```
+
+**Permission Request Flow**:
+- `NotificationPermissionDialog` shown on first launch (Android 13+)
+- Explains benefit to user
+- Offers "Enable" or "Not Now" options
+- Links to settings if user denies permanently
+
+### 3. Natural Language Processing
 
 **Location**: `domain/nlp/`
 
@@ -165,7 +257,7 @@ Return ParsedTask(title, dueDate, dueTime, confidence)
 - `DateTimeParser`: Natty wrapper + manual patterns
 - `ParsedTask`: Data class for results
 
-### 2. Database Schema
+### 4. Database Schema
 
 **Entity**: TaskEntity
 
@@ -199,7 +291,7 @@ suspend fun completeTask(taskId: String, completedDate: Long)
 suspend fun updateTaskStatus(taskId: String, newStatus: TaskStatus)
 ```
 
-### 3. Navigation
+### 5. Navigation
 
 **Routes**:
 - `main` - Main screen with three tabs
@@ -211,12 +303,32 @@ suspend fun updateTaskStatus(taskId: String, newStatus: TaskStatus)
 ```kotlin
 NavHost(navController, startDestination = "main") {
     composable("main") { MainScreen(...) }
-    composable("add_task") { AddTaskScreen(...) }
-    composable("edit_task/{taskId}") { AddTaskScreen(...) }
+
+    composable("add_task") {
+        // Reset ViewModel for new task
+        LaunchedEffect(Unit) { addTaskViewModel.reset() }
+        AddTaskScreen(...)
+    }
+
+    composable("edit_task/{taskId}") { backStackEntry ->
+        val taskId = backStackEntry.arguments?.getString("taskId")
+        // Load existing task data
+        LaunchedEffect(taskId) {
+            taskId?.let { addTaskViewModel.loadTaskForEdit(it) }
+        }
+        AddTaskScreen(...)
+    }
 }
 ```
 
-### 4. Dependency Injection
+**Edit Task Implementation**:
+- AddTaskViewModel now has `isEditMode` state
+- `loadTaskForEdit()` populates form with existing task
+- `saveTask()` uses UpdateTaskUseCase when in edit mode
+- UI shows "Edit Task" title and "Update Task" button when editing
+- Status selector hidden in edit mode (preserves current status)
+
+### 6. Dependency Injection
 
 **Pattern**: Manual factory pattern (no Hilt/Dagger)
 
@@ -231,11 +343,12 @@ val mainViewModel: MainViewModel = viewModel(factory = viewModelFactory)
 **Dependencies Created**:
 1. TaskDao (from database)
 2. TaskRepository (from DAO)
-3. Use Cases (from repository)
-4. NaturalLanguageProcessor (singleton)
-5. ViewModels (from use cases)
+3. ReminderScheduler (from context)
+4. Use Cases (from repository + scheduler)
+5. NaturalLanguageProcessor (singleton)
+6. ViewModels (from use cases)
 
-### 5. Material Design 3
+### 7. Material Design 3
 
 **Theme Configuration**: `ui/theme/Theme.kt`
 
@@ -518,19 +631,25 @@ navController.navigate("new_route")
 - Use Cases: `VerbNounUseCase` (e.g., `AddTaskUseCase`)
 - DAOs: `EntityNameDao`
 
+## Implemented Features (v1.0)
+
+✅ **Voice Input**: Speech-to-text for task creation
+✅ **Notifications**: 15-minute advance reminders
+✅ **Edit Tasks**: Full edit functionality with proper state management
+✅ **Permission Handling**: User-friendly notification permission request
+
 ## Future Enhancements
 
 Planned features (not yet implemented):
 
 1. **Recurring Tasks**: Support "every Saturday", "weekly", etc.
-2. **Voice Input**: Speech-to-text integration
-3. **Notifications**: Task reminders at due time
-4. **Monday Auto-move**: Prompt to move uncompleted weekend tasks
-5. **Statistics Screen**: Completion rate, trends, charts
-6. **Multi-language**: ML Kit supports 15+ languages
-7. **Backup/Restore**: Cloud backup via Google Drive
-8. **Widgets**: Home screen widget for quick task view
-9. **Themes**: Multiple Material 3 color schemes
+2. **Monday Auto-move**: Prompt to move uncompleted weekend tasks
+3. **Statistics Screen**: Completion rate, trends, charts
+4. **Multi-language**: ML Kit supports 15+ languages
+5. **Backup/Restore**: Cloud backup via Google Drive
+6. **Widgets**: Home screen widget for quick task view
+7. **Task Categories**: Organize by category (home, errands, etc.)
+8. **Themes**: Multiple Material 3 color schemes
 
 ## Resources
 
@@ -584,4 +703,4 @@ For questions about this codebase, refer to:
 
 **Last Updated**: 2025-10-18
 **Version**: 1.0.0
-**Status**: Production-ready MVP
+**Status**: Production-ready with voice input, edit functionality, and smart notifications
