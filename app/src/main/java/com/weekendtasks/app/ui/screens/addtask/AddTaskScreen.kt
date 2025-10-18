@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.weekendtasks.app.data.model.TaskPriority
 import com.weekendtasks.app.data.model.TaskStatus
+import com.weekendtasks.app.ui.components.DateTimePicker
 import com.weekendtasks.app.ui.components.NLPParsePreview
 import com.weekendtasks.app.ui.components.TaskInputField
 import com.weekendtasks.app.ui.components.VoiceInputButton
@@ -32,6 +33,8 @@ fun AddTaskScreen(
     val isProcessing by viewModel.isProcessing.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
     val isEditMode by viewModel.isEditMode.collectAsState()
+    val manualDate by viewModel.manualDate.collectAsState()
+    val manualTime by viewModel.manualTime.collectAsState()
 
     // Handle UI state
     LaunchedEffect(uiState) {
@@ -99,6 +102,16 @@ fun AddTaskScreen(
 
             // NLP Parse Preview
             NLPParsePreview(parsedTask = parsedTask)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Date and Time Picker
+            DateTimePicker(
+                dueDate = manualDate,
+                dueTime = manualTime,
+                onDateSelected = { viewModel.setManualDate(it) },
+                onTimeSelected = { viewModel.setManualTime(it) }
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
