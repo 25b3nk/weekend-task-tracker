@@ -516,22 +516,52 @@ val mainViewModel: MainViewModel = viewModel(factory = viewModelFactory)
 5. NaturalLanguageProcessor (singleton)
 6. ViewModels (from use cases)
 
-### 9. Material Design 3
+### 9. Material Design 3 & Custom Theming
 
 **Theme Configuration**: `ui/theme/Theme.kt`
 
-Features:
-- Dynamic color (Android 12+)
-- Light/Dark theme support
-- Custom color schemes for priorities
-- Status bar color adaptation
+**Custom App Icon**:
+- Purple-to-blue gradient background matching Material Design 3
+- White calendar with purple header
+- Green weekend squares (Saturday & Sunday)
+- Bold purple checkmark symbolizing task completion
+- Adaptive icon support for Android 8.0+ (API 26+)
 
-**Custom Colors**:
+**Icon Files**:
+- `ic_launcher_background.xml`: Gradient background (Purple #5E35B1 → Blue #1E88E5)
+- `ic_launcher_foreground.xml`: Vector drawable with calendar + checkmark
+- `ic_launcher.xml`: Adaptive icon configuration
+- PNG icons for all densities (mdpi to xxxhdpi)
+
+**Custom Color Scheme**:
 ```kotlin
-val PriorityHigh = Color(0xFFEF5350)    // Red
-val PriorityMedium = Color(0xFFFFA726)  // Orange
-val PriorityLow = Color(0xFF66BB6A)     // Green
+// App icon colors - matching the purple-to-blue gradient theme
+val PrimaryPurple = Color(0xFF5E35B1)      // Deep Purple (from icon)
+val PrimaryBlue = Color(0xFF1E88E5)        // Blue (from icon gradient)
+val AccentGreen = Color(0xFF66BB6A)        // Green (weekend squares)
+
+// Priority colors
+val PriorityHigh = Color(0xFFEF5350)       // Red
+val PriorityMedium = Color(0xFFFFA726)     // Orange
+val PriorityLow = Color(0xFF66BB6A)        // Green
 ```
+
+**Theme Features**:
+- Custom purple-blue theme matching app icon (dynamic color disabled)
+- Light/Dark theme support
+- Color-coded priorities and statuses
+- Status bar color matches primary purple
+- Consistent visual language from icon to UI
+
+**Light Theme**:
+- Primary: Deep Purple (#5E35B1) - from icon header
+- Secondary: Blue (#1E88E5) - from icon gradient
+- Tertiary: Green (#66BB6A) - from weekend squares
+
+**Dark Theme**:
+- Primary: Light Purple (#B39DDB)
+- Secondary: Light Blue (#90CAF9)
+- Tertiary: Green (#66BB6A)
 
 ## Important Code Locations
 
@@ -808,6 +838,8 @@ navController.navigate("new_route")
 ✅ **Date/Time Pickers**: Manual date and time selection for tasks
 ✅ **Monday Auto-Move**: Automatic transfer of uncompleted weekend tasks to master list every Monday
 ✅ **Statistics Dashboard**: Comprehensive analytics with completion rate, weekly trends, and priority distribution
+✅ **Custom App Icon**: Unique calendar + checkmark design with adaptive icon support (Android 8.0+)
+✅ **Unified Theme**: Custom purple-blue color scheme matching app icon across entire UI
 
 ## Future Enhancements
 

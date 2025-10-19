@@ -15,7 +15,8 @@ A native Android app for managing weekend tasks using Google ML Kit for natural 
   - **Master List**: Backlog of tasks for future weekends
   - **Completed**: Archive of finished tasks
 - **Offline-First**: All data stored locally with Room database
-- **Material Design 3**: Modern UI with dynamic color theming
+- **Material Design 3**: Modern UI with custom purple-blue theme matching app icon
+- **Custom App Icon**: Unique calendar + checkmark design with adaptive icon support
 - **Priority Management**: Mark tasks as Low, Medium, or High priority
 - **Smart Parsing**: Fallback to Natty date parser when ML Kit needs assistance
 
@@ -69,6 +70,14 @@ A native Android app for managing weekend tasks using Google ML Kit for natural 
 - **Natty Date Parser**: Enhanced date/time parsing (v0.13)
 - **Kotlin Coroutines**: Asynchronous programming (v1.7.3)
 - **Navigation Compose**: Screen navigation (v2.7.7)
+
+### Design
+- **Custom App Icon**: Purple-to-blue gradient with calendar + checkmark
+- **Adaptive Icons**: Support for Android 8.0+ (API 26+) with foreground/background layers
+- **Color Scheme**: Custom Material Design 3 theme matching icon colors
+  - Primary: Deep Purple (#5E35B1)
+  - Secondary: Blue (#1E88E5)
+  - Accent: Green (#66BB6A)
 
 ## Project Structure
 
