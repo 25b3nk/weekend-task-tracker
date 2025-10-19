@@ -1,0 +1,57 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+  <!-- Foreground content (centered, scaled to fit safe zone) -->
+  <group
+      android:scaleX="0.5"
+      android:scaleY="0.5"
+      android:translateX="27"
+      android:translateY="27">
+
+    <!-- Calendar Body -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M23,27 L85,27 A6,6 0 0,1 91,33 L91,95 A6,6 0 0,1 85,101 L23,101 A6,6 0 0,1 17,95 L17,33 A6,6 0 0,1 23,27 Z"/>
+
+    <!-- Calendar Header -->
+    <path
+        android:fillColor="#5E35B1"
+        android:pathData="M23,27 L85,27 A6,6 0 0,1 91,33 L91,47 L17,47 L17,33 A6,6 0 0,1 23,27 Z"/>
+
+    <!-- Top Binding Rings -->
+    <circle
+        android:fillColor="#5E35B1"
+        android:cx="32"
+        android:cy="27"
+        android:radius="3"/>
+    <circle
+        android:fillColor="#5E35B1"
+        android:cx="54"
+        android:cy="27"
+        android:radius="3"/>
+    <circle
+        android:fillColor="#5E35B1"
+        android:cx="76"
+        android:cy="27"
+        android:radius="3"/>
+
+    <!-- Weekend Squares -->
+    <path
+        android:fillColor="#66BB6A"
+        android:pathData="M64,57 L79,57 A3,3 0 0,1 82,60 L82,75 A3,3 0 0,1 79,78 L64,78 A3,3 0 0,1 61,75 L61,60 A3,3 0 0,1 64,57 Z"/>
+    <path
+        android:fillColor="#66BB6A"
+        android:pathData="M64,81 L79,81 A3,3 0 0,1 82,84 L82,99 A3,3 0 0,1 79,102 L64,102 A3,3 0 0,1 61,99 L61,84 A3,3 0 0,1 64,81 Z"/>
+
+    <!-- Large Check Mark -->
+    <path
+        android:strokeColor="#5E35B1"
+        android:strokeWidth="7"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M30,70 L44,84 L73,55"/>
+  </group>
+</vector>

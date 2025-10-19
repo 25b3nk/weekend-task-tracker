@@ -1,0 +1,35 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Rounded Square Background with Gradient -->
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#66BB6A;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#42A5F5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5C6BC0;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="115" fill="url(#bg-gradient)"/>
+
+  <!-- Calendar Symbol -->
+  <g>
+    <!-- Calendar Body -->
+    <rect x="130" y="160" width="252" height="252" rx="20" fill="white" opacity="0.95"/>
+
+    <!-- Calendar Top Bar -->
+    <rect x="130" y="160" width="252" height="60" rx="20" fill="white"/>
+    <rect x="130" y="190" width="252" height="30" fill="#1E88E5"/>
+
+    <!-- Binding Rings -->
+    <circle cx="190" cy="160" r="10" fill="#1E88E5"/>
+    <circle cx="256" cy="160" r="10" fill="#1E88E5"/>
+    <circle cx="322" cy="160" r="10" fill="#1E88E5"/>
+
+    <!-- "S" and "S" text (Sat/Sun) -->
+    <text x="175" y="250" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#66BB6A">S</text>
+    <text x="310" y="250" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#66BB6A">S</text>
+
+    <!-- Large Checkmark -->
+    <path d="M 180 310 L 220 350 L 320 250" stroke="#66BB6A" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+</svg>

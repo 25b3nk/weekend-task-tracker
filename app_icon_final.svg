@@ -1,0 +1,46 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Modern Gradient Background -->
+  <defs>
+    <linearGradient id="modern-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#5E35B1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E88E5;stop-opacity:1" />
+    </linearGradient>
+
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Background with rounded corners for adaptive icon -->
+  <rect width="512" height="512" rx="120" fill="url(#modern-gradient)"/>
+
+  <!-- Main Icon Group -->
+  <g filter="url(#shadow)">
+    <!-- Simplified Calendar -->
+    <rect x="100" y="120" width="312" height="312" rx="32" fill="white" opacity="0.15"/>
+    <rect x="110" y="130" width="292" height="292" rx="28" fill="white"/>
+
+    <!-- Calendar Header -->
+    <rect x="110" y="130" width="292" height="80" rx="28" fill="white"/>
+    <rect x="110" y="175" width="292" height="35" fill="#5E35B1"/>
+
+    <!-- Top Rings -->
+    <circle cx="160" cy="130" r="14" fill="#5E35B1"/>
+    <circle cx="256" cy="130" r="14" fill="#5E35B1"/>
+    <circle cx="352" cy="130" r="14" fill="#5E35B1"/>
+
+    <!-- Weekend Squares (Minimalist) -->
+    <rect x="300" y="250" width="70" height="70" rx="12" fill="#66BB6A"/>
+    <rect x="300" y="330" width="70" height="70" rx="12" fill="#66BB6A"/>
+
+    <!-- Large Check Mark (Primary Element) -->
+    <g>
+      <path d="M 150 320 L 210 380 L 350 240"
+            stroke="#5E35B1"
+            stroke-width="32"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            fill="none"/>
+    </g>
+  </g>
+</svg>
