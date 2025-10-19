@@ -10,6 +10,8 @@ import com.weekendtasks.app.ui.screens.addtask.AddTaskScreen
 import com.weekendtasks.app.ui.screens.addtask.AddTaskViewModel
 import com.weekendtasks.app.ui.screens.main.MainScreen
 import com.weekendtasks.app.ui.screens.main.MainViewModel
+import com.weekendtasks.app.ui.screens.statistics.StatisticsScreen
+import com.weekendtasks.app.ui.screens.statistics.StatisticsViewModel
 
 /**
  * Navigation routes for the app
@@ -20,6 +22,7 @@ sealed class Screen(val route: String) {
     data object EditTask : Screen("edit_task/{taskId}") {
         fun createRoute(taskId: String) = "edit_task/$taskId"
     }
+    data object Statistics : Screen("statistics")
 }
 
 /**
@@ -30,6 +33,7 @@ fun NavGraph(
     navController: NavHostController,
     mainViewModel: MainViewModel,
     addTaskViewModel: AddTaskViewModel,
+    statisticsViewModel: StatisticsViewModel,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -46,6 +50,9 @@ fun NavGraph(
                 },
                 onEditTask = { taskId ->
                     navController.navigate(Screen.EditTask.createRoute(taskId))
+                },
+                onNavigateToStatistics = {
+                    navController.navigate(Screen.Statistics.route)
                 }
             )
         }
@@ -78,6 +85,16 @@ fun NavGraph(
 
             AddTaskScreen(
                 viewModel = addTaskViewModel,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // Statistics screen
+        composable(Screen.Statistics.route) {
+            StatisticsScreen(
+                viewModel = statisticsViewModel,
                 onNavigateBack = {
                     navController.popBackStack()
                 }

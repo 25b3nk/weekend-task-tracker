@@ -9,6 +9,7 @@ import com.weekendtasks.app.domain.usecase.*
 import com.weekendtasks.app.notifications.ReminderScheduler
 import com.weekendtasks.app.ui.screens.addtask.AddTaskViewModel
 import com.weekendtasks.app.ui.screens.main.MainViewModel
+import com.weekendtasks.app.ui.screens.statistics.StatisticsViewModel
 
 /**
  * Factory for creating ViewModels with dependencies.
@@ -54,6 +55,10 @@ class ViewModelFactory(
         NaturalLanguageProcessor()
     }
 
+    private val getStatisticsUseCase: GetStatisticsUseCase by lazy {
+        GetStatisticsUseCase(repository)
+    }
+
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
@@ -71,6 +76,11 @@ class ViewModelFactory(
                     updateTaskUseCase,
                     nlpProcessor,
                     repository
+                ) as T
+            }
+            modelClass.isAssignableFrom(StatisticsViewModel::class.java) -> {
+                StatisticsViewModel(
+                    getStatisticsUseCase
                 ) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")

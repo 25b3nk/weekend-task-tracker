@@ -131,4 +131,11 @@ class TaskRepository(private val taskDao: TaskDao) {
     suspend fun clearCompletedTasks() {
         taskDao.deleteAllCompletedTasks()
     }
+
+    /**
+     * Get all tasks for statistics calculation
+     */
+    suspend fun getAllTasks(): List<Task> {
+        return taskDao.getAllTasks().map { it.toDomainModel() }
+    }
 }

@@ -15,6 +15,7 @@ import com.weekendtasks.app.ui.components.NotificationPermissionDialog
 import com.weekendtasks.app.ui.navigation.NavGraph
 import com.weekendtasks.app.ui.screens.addtask.AddTaskViewModel
 import com.weekendtasks.app.ui.screens.main.MainViewModel
+import com.weekendtasks.app.ui.screens.statistics.StatisticsViewModel
 import com.weekendtasks.app.ui.theme.WeekendTaskTrackerTheme
 
 /**
@@ -38,12 +39,14 @@ class MainActivity : ComponentActivity() {
                     // Create ViewModels
                     val mainViewModel: MainViewModel = viewModel(factory = viewModelFactory)
                     val addTaskViewModel: AddTaskViewModel = viewModel(factory = viewModelFactory)
+                    val statisticsViewModel: StatisticsViewModel = viewModel(factory = viewModelFactory)
 
                     // Set up navigation
                     NavGraph(
                         navController = navController,
                         mainViewModel = mainViewModel,
-                        addTaskViewModel = addTaskViewModel
+                        addTaskViewModel = addTaskViewModel,
+                        statisticsViewModel = statisticsViewModel
                     )
 
                     // Request notification permission on app start (Android 13+)

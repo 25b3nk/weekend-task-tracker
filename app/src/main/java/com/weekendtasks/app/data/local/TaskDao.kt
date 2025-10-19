@@ -100,4 +100,28 @@ interface TaskDao {
      */
     @Query("DELETE FROM tasks WHERE status = 'COMPLETED'")
     suspend fun deleteAllCompletedTasks()
+
+    /**
+     * Get all tasks for statistics
+     */
+    @Query("SELECT * FROM tasks")
+    suspend fun getAllTasks(): List<TaskEntity>
+
+    /**
+     * Get tasks created within a time range
+     */
+    @Query("SELECT * FROM tasks WHERE createdDate >= :startTime AND createdDate <= :endTime")
+    suspend fun getTasksCreatedBetween(startTime: Long, endTime: Long): List<TaskEntity>
+
+    /**
+     * Get tasks completed within a time range
+     */
+    @Query("SELECT * FROM tasks WHERE completedDate >= :startTime AND completedDate <= :endTime AND completedDate IS NOT NULL")
+    suspend fun getTasksCompletedBetween(startTime: Long, endTime: Long): List<TaskEntity>
+
+    /**
+     * Get count of tasks by priority
+     */
+    @Query("SELECT COUNT(*) FROM tasks WHERE priority = :priority")
+    suspend fun getTaskCountByPriority(priority: com.weekendtasks.app.data.model.TaskPriority): Int
 }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Weekend
@@ -26,6 +27,7 @@ fun MainScreen(
     viewModel: MainViewModel,
     onAddTaskClick: () -> Unit,
     onEditTask: (String) -> Unit,
+    onNavigateToStatistics: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val weekendTasks by viewModel.weekendTasks.collectAsState()
@@ -54,7 +56,15 @@ fun MainScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Weekend Task Tracker") }
+                title = { Text("Weekend Task Tracker") },
+                actions = {
+                    IconButton(onClick = onNavigateToStatistics) {
+                        Icon(
+                            imageVector = Icons.Default.BarChart,
+                            contentDescription = "Statistics"
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {
