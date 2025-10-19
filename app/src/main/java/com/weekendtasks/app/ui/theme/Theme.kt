@@ -16,29 +16,26 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80,
+    primary = Purple80,              // Light purple for dark theme
+    secondary = Blue80,              // Light blue for dark theme
+    tertiary = AccentGreen,          // Green accent (weekend tasks)
     background = BackgroundDark,
-    surface = SurfaceDark
+    surface = SurfaceDark,
+    primaryContainer = PurpleGrey40,
+    secondaryContainer = Blue40
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
+    primary = PrimaryPurple,         // Deep purple from icon
+    secondary = PrimaryBlue,         // Blue from icon gradient
+    tertiary = AccentGreen,          // Green from weekend squares
     background = BackgroundLight,
-    surface = SurfaceLight
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    surface = SurfaceLight,
+    primaryContainer = Purple80,     // Light purple container
+    secondaryContainer = Blue80,     // Light blue container
+    onPrimary = androidx.compose.ui.graphics.Color.White,
+    onSecondary = androidx.compose.ui.graphics.Color.White,
+    onTertiary = androidx.compose.ui.graphics.Color.White
 )
 
 @Composable
