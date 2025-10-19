@@ -9,6 +9,7 @@ A native Android app for managing weekend tasks using Google ML Kit for natural 
 - **ML Kit Integration**: Automatic extraction of dates, times, and task descriptions using Google ML Kit
 - **Smart Reminders**: Get notified 15 minutes before task due time
 - **Monday Auto-Move**: Uncompleted weekend tasks automatically move to master list every Monday
+- **Statistics Dashboard**: Comprehensive analytics showing completion rate, weekly trends, and priority distribution
 - **Three Task Lists**:
   - **Weekend Tasks**: Active tasks for the current/upcoming weekend
   - **Master List**: Backlog of tasks for future weekends
@@ -300,11 +301,12 @@ Return ParsedTask
 Planned features for future releases:
 
 1. **Recurring Tasks**: "every Saturday", "weekly"
-2. **Statistics**: Completion rate, productivity trends
+2. **Advanced Charts**: Interactive charts with Vico library for detailed trends
 3. **Smart Suggestions**: ML Kit Smart Reply for common tasks
 4. **Multi-language**: Support for additional languages
 5. **Widget Support**: Home screen widget for quick task access
 6. **Task Categories**: Organize tasks by category (home, errands, projects, etc.)
+7. **Export Statistics**: Generate PDF/CSV reports of task statistics
 
 ## Troubleshooting
 

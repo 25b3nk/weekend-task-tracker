@@ -21,11 +21,12 @@ A native Android task management app specifically designed for weekend planning.
 2. Voice input for hands-free task creation
 3. Smart notifications (15-min advance reminders)
 4. Monday auto-move (uncompleted weekend tasks → master list)
-5. Three task lists: Weekend, Master List, Completed
-6. Offline-first with Room database
-7. Material Design 3 UI with dynamic colors
-8. Priority management (Low, Medium, High)
-9. Task operations: Create, Complete, Move, Edit, Delete
+5. Statistics dashboard (completion rate, weekly trends, priority distribution)
+6. Three task lists: Weekend, Master List, Completed
+7. Offline-first with Room database
+8. Material Design 3 UI with dynamic colors
+9. Priority management (Low, Medium, High)
+10. Task operations: Create, Complete, Move, Edit, Delete
 
 ## Technology Stack
 
@@ -118,6 +119,10 @@ app/src/main/java/com/weekendtasks/app/
 │   ├── TaskReminderWorker.kt       # Background worker
 │   ├── MondayReminderWorker.kt     # Monday auto-move worker
 │   └── MondayReminderScheduler.kt  # Monday scheduling logic
+│
+├── ui/screens/statistics/          # Statistics screen
+│   ├── StatisticsScreen.kt         # Statistics UI
+│   └── StatisticsViewModel.kt      # Statistics state management
 │
 ├── MainActivity.kt                 # Entry point
 └── WeekendTaskApp.kt              # Application class
@@ -288,7 +293,108 @@ SharedPreferences stores "last_check_date"
 - Reuses `ReminderScheduler` to cancel notifications
 - Shares `NotificationHelper` for consistent UI
 
-### 4. Natural Language Processing
+### 4. Statistics Dashboard
+
+**Location**: `ui/screens/statistics/`
+
+**Purpose**: Provides comprehensive analytics about task completion, productivity trends, and priority distribution.
+
+**Architecture**:
+```
+User taps bar chart icon in TopAppBar
+    ↓
+Navigate to Statistics Screen
+    ↓
+StatisticsViewModel.loadStatistics()
+    ↓
+GetStatisticsUseCase.invoke()
+    ↓
+TaskRepository.getAllTasks() + calculations
+    ↓
+Return TaskStatistics with all metrics
+    ↓
+UI displays statistics with progress bars
+```
+
+**Key Components**:
+
+1. **GetStatisticsUseCase**: Aggregates all statistics
+   - Calculates completion rate from all tasks
+   - Groups tasks by week for last 4 weeks
+   - Counts tasks by priority level
+   - Returns comprehensive TaskStatistics object
+
+2. **StatisticsViewModel**: Manages statistics state
+   - Loads statistics on initialization
+   - Exposes StatisticsUiState (Loading/Success/Error)
+   - Provides refresh() method to reload data
+
+3. **StatisticsScreen**: Displays analytics UI
+   - Overview cards showing total tasks and completion rate
+   - Active tasks breakdown (Weekend vs Master)
+   - Weekly trends for last 4 weeks (created vs completed)
+   - Priority distribution with color-coded progress bars
+   - Scrollable layout with Material 3 cards
+
+**Statistics Displayed**:
+
+1. **Overview Section**:
+   - Total tasks (all time)
+   - Completion rate (percentage)
+   - Weekend tasks count
+   - Master list tasks count
+
+2. **Weekly Trends Section**:
+   - Last 4 weeks displayed oldest to newest
+   - Tasks created each week
+   - Tasks completed each week
+   - Visual comparison with icons
+
+3. **Priority Distribution Section**:
+   - High priority count and percentage (Red)
+   - Medium priority count and percentage (Orange)
+   - Low priority count and percentage (Green)
+   - Total tasks in distribution
+
+**UI Components**:
+- `StatCard`: Reusable card for displaying stats with icon
+- `ProgressStatCard`: Card with progress bar
+- `HorizontalProgressStat`: Labeled progress bar with percentage
+- Pure Compose (no external chart libraries)
+
+**Data Models**:
+```kotlin
+data class TaskStatistics(
+    val totalTasks: Int,
+    val completedTasks: Int,
+    val weekendTasks: Int,
+    val masterTasks: Int,
+    val completionRate: Float,
+    val weeklyTrends: List<WeeklyTrend>,
+    val priorityDistribution: PriorityDistribution
+)
+
+data class WeeklyTrend(
+    val weekLabel: String,      // "This Week", "Last Week", etc.
+    val tasksCreated: Int,
+    val tasksCompleted: Int,
+    val startDate: Long,
+    val endDate: Long
+)
+
+data class PriorityDistribution(
+    val highPriority: Int,
+    val mediumPriority: Int,
+    val lowPriority: Int
+)
+```
+
+**Navigation**:
+- Accessible via bar chart icon in main screen TopAppBar
+- Route: "statistics"
+- Back button navigates to main screen
+
+### 5. Natural Language Processing
 
 **Location**: `domain/nlp/`
 
@@ -318,7 +424,7 @@ Return ParsedTask(title, dueDate, dueTime, confidence)
 - `DateTimeParser`: Natty wrapper + manual patterns
 - `ParsedTask`: Data class for results
 
-### 4. Database Schema
+### 6. Database Schema
 
 **Entity**: TaskEntity
 
@@ -352,12 +458,13 @@ suspend fun completeTask(taskId: String, completedDate: Long)
 suspend fun updateTaskStatus(taskId: String, newStatus: TaskStatus)
 ```
 
-### 5. Navigation
+### 7. Navigation
 
 **Routes**:
 - `main` - Main screen with three tabs
 - `add_task` - Add new task screen
 - `edit_task/{taskId}` - Edit task screen (currently same as add_task)
+- `statistics` - Statistics dashboard screen
 
 **Navigation Graph**: `ui/navigation/NavGraph.kt`
 
@@ -389,7 +496,7 @@ NavHost(navController, startDestination = "main") {
 - UI shows "Edit Task" title and "Update Task" button when editing
 - Status selector hidden in edit mode (preserves current status)
 
-### 6. Dependency Injection
+### 8. Dependency Injection
 
 **Pattern**: Manual factory pattern (no Hilt/Dagger)
 
@@ -409,7 +516,7 @@ val mainViewModel: MainViewModel = viewModel(factory = viewModelFactory)
 5. NaturalLanguageProcessor (singleton)
 6. ViewModels (from use cases)
 
-### 7. Material Design 3
+### 9. Material Design 3
 
 **Theme Configuration**: `ui/theme/Theme.kt`
 
@@ -700,18 +807,20 @@ navController.navigate("new_route")
 ✅ **Permission Handling**: User-friendly notification permission request
 ✅ **Date/Time Pickers**: Manual date and time selection for tasks
 ✅ **Monday Auto-Move**: Automatic transfer of uncompleted weekend tasks to master list every Monday
+✅ **Statistics Dashboard**: Comprehensive analytics with completion rate, weekly trends, and priority distribution
 
 ## Future Enhancements
 
 Planned features (not yet implemented):
 
 1. **Recurring Tasks**: Support "every Saturday", "weekly", etc.
-2. **Statistics Screen**: Completion rate, trends, charts
-3. **Multi-language**: ML Kit supports 15+ languages
-4. **Backup/Restore**: Cloud backup via Google Drive
-5. **Widgets**: Home screen widget for quick task view
-6. **Task Categories**: Organize by category (home, errands, etc.)
-7. **Themes**: Multiple Material 3 color schemes
+2. **Advanced Charts**: Interactive charts with Vico library for detailed visualization
+3. **Export Statistics**: Generate PDF/CSV reports of task analytics
+4. **Multi-language**: ML Kit supports 15+ languages
+5. **Backup/Restore**: Cloud backup via Google Drive
+6. **Widgets**: Home screen widget for quick task view
+7. **Task Categories**: Organize by category (home, errands, etc.)
+8. **Themes**: Multiple Material 3 color schemes
 
 ## Resources
 
