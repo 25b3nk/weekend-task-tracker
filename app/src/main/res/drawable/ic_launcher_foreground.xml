@@ -21,22 +21,16 @@
         android:fillColor="#5E35B1"
         android:pathData="M23,27 L85,27 A6,6 0 0,1 91,33 L91,47 L17,47 L17,33 A6,6 0 0,1 23,27 Z"/>
 
-    <!-- Top Binding Rings -->
-    <circle
+    <!-- Top Binding Rings (using path circles) -->
+    <path
         android:fillColor="#5E35B1"
-        android:cx="32"
-        android:cy="27"
-        android:radius="3"/>
-    <circle
+        android:pathData="M32,24 A3,3 0 1,0 32,30 A3,3 0 1,0 32,24 Z"/>
+    <path
         android:fillColor="#5E35B1"
-        android:cx="54"
-        android:cy="27"
-        android:radius="3"/>
-    <circle
+        android:pathData="M54,24 A3,3 0 1,0 54,30 A3,3 0 1,0 54,24 Z"/>
+    <path
         android:fillColor="#5E35B1"
-        android:cx="76"
-        android:cy="27"
-        android:radius="3"/>
+        android:pathData="M76,24 A3,3 0 1,0 76,30 A3,3 0 1,0 76,24 Z"/>
 
     <!-- Weekend Squares -->
     <path
